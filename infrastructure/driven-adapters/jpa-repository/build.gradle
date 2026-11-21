@@ -10,6 +10,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2' // TODO: remove this to use real database
     testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    runtimeOnly 'org.postgresql:postgresql'
 }
 repositories {
     mavenCentral()
