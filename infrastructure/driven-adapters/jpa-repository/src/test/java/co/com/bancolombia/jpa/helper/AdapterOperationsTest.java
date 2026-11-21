@@ -2,6 +2,8 @@ package co.com.bancolombia.jpa.helper;
 
 import co.com.bancolombia.jpa.JPARepository;
 import co.com.bancolombia.jpa.JPARepositoryAdapter;
+import co.com.bancolombia.jpa.entity.UserEntity;
+import co.com.bancolombia.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -30,69 +32,66 @@ class AdapterOperationsTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        when(objectMapper.map("value", Object.class)).thenReturn("value");
-
         adapter = new JPARepositoryAdapter(repository, objectMapper);
     }
 
     @Test
     void testSave() {
+        User user = User.builder()
+                .nombres("Fabian")
+                .apellidos("Hernandez")
+                .build();
 
-        Object objectValue = "value";
+        UserEntity entity = new UserEntity();
 
-        when(repository.save(objectValue)).thenReturn(objectValue);
+        when(objectMapper.map(user, UserEntity.class)).thenReturn(entity);
+        when(objectMapper.map(entity, User.class)).thenReturn(user);
+        when(repository.save(entity)).thenReturn(entity);
 
-        Object result = adapter.save(objectValue);
+        User result = adapter.save(user);
 
-        assertEquals(result, objectValue);
-    }
-
-    @Test
-    void testSaveAllEntities() {
-
-        List<Object> objectValues = List.of("value", "value");
-
-        when(repository.saveAll(objectValues)).thenReturn(objectValues);
-
-        Object result = adapter.saveAllEntities(objectValues);
-
-        assertEquals(result, objectValues);
+        assertEquals(user, result);
     }
 
     @Test
     void testFindById() {
+        UserEntity entity = new UserEntity();
 
-        Object objectValue = "value";
+        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+        when(objectMapper.map(entity, User.class)).thenReturn(null);
 
-        when(repository.findById("id")).thenReturn(Optional.of(objectValue));
+        User result = adapter.findById(1L);
 
-        Object result = adapter.findById("id");
-
-        assertEquals(result, objectValue);
+        assertEquals(null, result);
     }
 
     @Test
     void testFindAll() {
+        List<UserEntity> entities = List.of(new UserEntity(), new UserEntity());
 
-        List<Object> objectValues = List.of("value", "value");
+        when(repository.findAll()).thenReturn(entities);
+        when(objectMapper.map(any(UserEntity.class), any())).thenReturn(null);
 
-        when(repository.findAll()).thenReturn(objectValues);
+        List<User> result = adapter.findAll();
 
-        Object result = adapter.findAll();
-
-        assertEquals(result, objectValues);
+        assertEquals(2, result.size());
     }
 
     @Test
     void testFindByExample() {
+        User user = User.builder()
+                .nombres("Fabian")
+                .build();
 
-        Object objectValue = "value";
-        List<Object> objectValues = List.of(objectValue, objectValue);
+        UserEntity entity = new UserEntity();
+        List<UserEntity> entities = List.of(entity, entity);
 
-        when(repository.findAll(any(Example.class))).thenReturn(objectValues);
+        when(objectMapper.map(user, UserEntity.class)).thenReturn(entity);
+        when(repository.findAll(any(Example.class))).thenReturn(entities);
+        when(objectMapper.map(any(UserEntity.class), any())).thenReturn(null);
 
-        Object result = adapter.findByExample(objectValue);
+        List<User> result = adapter.findByExample(user);
 
-        assertEquals(result, objectValues);
+        assertEquals(2, result.size());
     }
 }
