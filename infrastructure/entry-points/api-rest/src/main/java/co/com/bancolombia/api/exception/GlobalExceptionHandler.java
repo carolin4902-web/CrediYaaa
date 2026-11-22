@@ -10,8 +10,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+
+        if ("El correo electrónico ya está registrado".equals(ex.getMessage())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(ex.getMessage());
+        }
+
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
     }
 }
